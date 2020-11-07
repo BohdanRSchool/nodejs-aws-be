@@ -12,8 +12,18 @@ const CORSHeaders = {
 }
 
 export const getProductsList = async (): Promise<APIGatewayProxyResult> => {
-  // emulate async call
-  const products: Array<Product> = await getProducts();
+  let products: Array<Product>;
+  try {
+    products = await getProducts();
+    console.log('products', products);
+  } catch (error) {
+    console.log('error', error);
+    return {
+      ...CORSHeaders,
+      statusCode: 500,
+      body: error.message,
+    }
+  }
 
   if (!products.length) {
     return {

@@ -14,10 +14,9 @@ const serverlessConfiguration: Serverless = {
       includeModules: true
     }
   },
-  // Add the serverless-webpack plugin
   plugins: [
     'serverless-webpack',
-    'serverless-openapi-documentation'
+    'serverless-dotenv-plugin'
   ],
   provider: {
     name: 'aws',
@@ -56,6 +55,23 @@ const serverlessConfiguration: Serverless = {
                 paths: {
                   productId: true
                 }
+              }
+            }
+          }
+        }
+      ]
+    },
+    createProducts: {
+      handler: 'handler.createProducts',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: '/products',
+            cors: true,
+            request: {
+              schema: {
+                'application/json': '${file(product_payload.json)}'
               }
             }
           }
