@@ -14,9 +14,19 @@ const CORSHeaders = {
 
 export const getProductsById = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const { productId } = event.pathParameters
-
-  // emulate async call
-  const product: Product = await getProductById(productId);
+  let product: Product;
+  try {
+    product = await getProductById(productId);
+    console.log('productId', productId);
+    console.log('product', product);
+  } catch (error) {
+    console.log('error', error);
+    return {
+      ...CORSHeaders,
+      statusCode: 500,
+      body: error.message,
+    }
+  }
 
   if (!product) {
     return {

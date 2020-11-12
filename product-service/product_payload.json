@@ -1,0 +1,28 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "title",
+    "price",
+    "count"
+  ],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "count": {
+      "type": "number"
+    }
+  }
+}
