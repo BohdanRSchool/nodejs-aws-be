@@ -7,6 +7,7 @@ const BUCKET = 'rsschool';
 
 export const importFileParser: S3Handler = (event: S3Event): void => {
   const s3 = new AWS.S3({ region: 'eu-west-1' });
+  const sqs = new AWS.SQS({ region: 'eu-west-1' });
 
   for (const record of event.Records) {
     const copySource: string = `${BUCKET}/${record.s3.object.key}`;
@@ -23,9 +24,15 @@ export const importFileParser: S3Handler = (event: S3Event): void => {
 
     s3.getObject(params)
       .createReadStream()
-      .pipe(csv())
+      .pipe(csv({ separator: ';' }))
       .on('error', console.log)
-      .on('data', console.log)
+      .on('data', async item => {
+        await sqs.sendMessage({
+          QueueUrl: process.env.QUEUE_URL,
+          DelaySeconds: 3,
+          MessageBody: JSON.stringify(item)
+        }).promise()
+      })
       .on('end', async () => {
         console.log(`Copy from ${copySource}`);
         try {

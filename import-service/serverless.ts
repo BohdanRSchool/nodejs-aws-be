@@ -25,18 +25,28 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      QUEUE_URL: {
+        'Fn::ImportValue': 'SQSQueueUrl',
+      }
     },
     iamRoleStatements: [
       {
-        Effect: "Allow",
-        Action: ["s3:ListBucket"],
-        Resource: ["arn:aws:s3:::rsschool"],
+        Effect: 'Allow',
+        Action: ['s3:ListBucket'],
+        Resource: ['arn:aws:s3:::rsschool'],
       },
       {
-        Effect: "Allow",
-        Action: ["s3:*"],
-        Resource: ["arn:aws:s3:::rsschool/*"],
+        Effect: 'Allow',
+        Action: ['s3:*'],
+        Resource: ['arn:aws:s3:::rsschool/*'],
       },
+      {
+        Effect: 'Allow',
+        Action: ['sqs:*'],
+        Resource: {
+          'Fn::ImportValue': 'SQSQueueArn',
+        },
+      }
     ],
   },
   functions: {

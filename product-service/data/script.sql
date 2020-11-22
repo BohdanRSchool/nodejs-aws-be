@@ -1,8 +1,8 @@
 create extension if not exists "uuid-ossp";
 
-create table products(id uuid primary key default uuid_generate_v4(), title text not null, description text, url text, price real);
+create table products(id uuid primary key default uuid_generate_v4(), title text not null, description text, url text, price numeric CHECK(price > 0));
 
-create table stocks(id uuid primary key default uuid_generate_v4(), product_id uuid, count integer, foreign key ("product_id") references "products" ("id"));
+create table stocks(id uuid primary key default uuid_generate_v4(), product_id uuid, count integer CHECK(count > 0), foreign key ("product_id") references "products" ("id"));
 
 with product as (
 insert into products(title, description, url, price)

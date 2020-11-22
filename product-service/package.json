@@ -11,6 +11,7 @@
     "local:getProductsById": "serverless invoke local --function getProductsById"
   },
   "dependencies": {
+    "aws-sdk": "^2.797.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
     "babel-preset-es2015": "^6.24.1",
