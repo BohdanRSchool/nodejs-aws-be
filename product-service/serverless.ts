@@ -27,7 +27,19 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      SNS_ARN: {
+        Ref: 'CreateProductTopic',
+      }
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: {
+          Ref: 'CreateProductTopic',
+        }
+      }
+    ]
   },
   functions: {
     getProductsList: {
@@ -77,10 +89,89 @@ const serverlessConfiguration: Serverless = {
           }
         }
       ]
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            arn: {
+              'Fn::GetAtt': [
+                'CatalogItemsQueue',
+                'Arn'
+              ]
+            },
+            batchSize: 5
+          }
+        }
+      ]
     }
   },
   resources: {
+    Outputs: {
+      SQSQueueUrl: {
+        Value: {
+          Ref: 'CatalogItemsQueue'
+        },
+        Export: {
+          Name: 'SQSQueueUrl'
+        }
+      },
+      SQSQueueArn: {
+        Value: {
+          'Fn::GetAtt': [
+            'CatalogItemsQueue',
+            'Arn'
+          ]
+        },
+        Export: {
+          Name: 'SQSQueueArn'
+        }
+      }
+    },
     Resources: {
+      CatalogItemsQueue: {
+        Properties: {
+          QueueName: 'product-items-sqs'
+        },
+        Type: 'AWS::SQS::Queue'
+      },
+      CreateProductTopic: {
+        Properties: {
+          TopicName: 'product-items-topic'
+        },
+        Type: 'AWS::SNS::Topic'
+      },
+      SNSSubscriptionSuccess: {
+        Properties: {
+          Endpoint: 'vinn.andrew@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CreateProductTopic'
+          },
+          FilterPolicy: {
+            Status: [
+              'Success',
+            ]
+          }
+        },
+        Type: 'AWS::SNS::Subscription'
+      },
+      SNSSubscriptionFail: {
+        Properties: {
+          Endpoint: 'vinn.bohdan.z@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CreateProductTopic'
+          },
+          FilterPolicy: {
+            Status: [
+              'Fail',
+            ]
+          }
+        },
+        Type: 'AWS::SNS::Subscription'
+      },
       GatewayResponseDefault4XX: {
         Type: 'AWS::ApiGateway::GatewayResponse',
         Properties: {
