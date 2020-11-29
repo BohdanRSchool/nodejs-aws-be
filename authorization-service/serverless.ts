@@ -33,23 +33,21 @@ const serverlessConfiguration: Serverless = {
   functions: {
     basicAuthorizer: {
       handler: 'handler.basicAuthorizer',
-      events: [
-        {
-          http: {
-            method: 'get',
-            path: '/token',
-            cors: true,
-            authorizer: {
-              name: 'basicAuthorizer',
-              resultTtlInSeconds: 0,
-              type: 'token',
-              identitySource: 'method.request.header.Authorization'
-            }
-          }
-        }
-      ]
-    }
-  }
+    },
+  },
+  resources: {
+    Resources: {},
+    Outputs: {
+      authorizerArn: {
+        Value: {
+          'Fn::GetAtt': [
+            'BasicAuthorizerLambdaFunction',
+            'Arn'
+          ],
+        },
+      },
+    },
+  },
 }
 
 module.exports = serverlessConfiguration;

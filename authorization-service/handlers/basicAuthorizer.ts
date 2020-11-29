@@ -3,7 +3,7 @@ import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, APIGatewayA
 
 export const basicAuthorizer: APIGatewayAuthorizerHandler = async (event: APIGatewayTokenAuthorizerEvent, ctx, cb: Callback<APIGatewayAuthorizerResult>): Promise<any> => {
     console.log("Event: ", JSON.stringify(event));
-    if (event.type !== 'TOKEN') {
+    if (event.type !== 'TOKEN' || event.authorizationToken.split(' ')[0].toLowerCase() !== 'basic') {
         cb('Unauthorized');
     }
     try {
