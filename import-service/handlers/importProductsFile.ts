@@ -18,8 +18,7 @@ export const importProductsFile: APIGatewayProxyHandler = async (event: APIGatew
   const params = {
     Bucket: BUCKET,
     Key: `uploaded/${fileName}`,
-    Expires: 60,
-    ContentType: 'application/vnd.ms-excel'
+    Expires: 60
   };
 
   try {
